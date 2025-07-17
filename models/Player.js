@@ -6,13 +6,13 @@ export default class Player
         this.times = [];
     }
 
-    RecordTime(start, end)
+    recordTime(start, end)
     {
         const duration = end - start; // milliseconds
         this.times.push(duration);
     }
 
-    ShowStats()
+    showStats()
     {
         const totalTime = this.times.reduce((sum, t) => sum + t, 0);
         const averageTime = this.times.length > 0 ? totalTime / this.times.length : 0;

@@ -10,19 +10,19 @@ export default class Riddle
         this.correctAnswer = correctAnswer;
     }
 
-    ShowRiddle()
+    showRiddle()
     {
         console.log(`Riddle #${this.id}: ${this.name}`);
         console.log(this.taskDescription);
     }   
     
-    Ask()
+    ask()
     {
         const answer = readlineSync.question('enter your answer \n');
         return answer;
     }
 
-    Compare(input)
+    compare(input)
     {
         if (input === this.correctAnswer)
         {
@@ -36,16 +36,16 @@ export default class Riddle
         }
     }
 
-    Repeat()
+    async repeat()
     {
-        this.ShowRiddle();
+        this.showRiddle();
 
         let isCorrect = false;
 
         while (!isCorrect)
         {
-            const input = this.Ask();
-            isCorrect = this.Compare(input);
+            const input = this.ask();
+            isCorrect = this.compare(input);
         }
     }
 }
