@@ -1,9 +1,14 @@
-// import Riddle from "../models/Riddle.js";
-// import { getAllRiddles , createRiddle, updateRiddle , deleteRiddle } from "../api/riddles-api.js";
-// import { input } from "../utils/formatter.js";
-// import player from "../game.js";
+import {
+    getAllRiddles,
+    createRiddle,
+    updateRiddle,
+    deleteRiddle,
+} from "../api/riddles-api.js"
+import { getPlayers } from "../api/player-api.js"
+import { input } from "../utils/formatter.js";
 
-function showMenu() {
+export default function showMenu() {
+    console.log("enter 0 to exit")
     console.log("enter 1 to play the game");
     console.log("enter 2 to read all riddels");
     console.log("enter 3 to creat a new riddle");
@@ -12,85 +17,77 @@ function showMenu() {
     console.log("enter 6 to view leaderboard");
 }
 
-// function select(selction) {
-//     switch (selction) {
-//         case 1:
-//             play();
-//             break;
-//         case 2:
-//             const name = input("Enter riddle name");
-//             const taskDescription = input("Enter taskDescription");
-//             const correctAnswer = input("Enter correctAnwser")
-//             createRiddle({
-//                 "name": name,
-//                 "taskDescription": taskDescription,
-//                 "correctAnswer": correctAnswer
-//             })
-//             break;
-//         case 3:
-//             const id = input("Enter riddle id");
-//             const newName = input("Enter riddle name");
-//             const newTaskDescription = input("Enter taskDescription");
-//             const newCorrectAnswer = input("Enter correctAnwser")
-//             updateRiddle({
-//                 "id": id,
-//                 "name": newName,
-//                 "taskDescription": newTaskDescription,
-//                 "correctAnswer": newCorrectAnswer
-//             });
-//             break;
-//         case 4:
-//             idToDelete = input("Enter riddle id");
-//             deleteRiddle({"id": idToDelete})
-//             break;
-//         case 5:
-//             input("Enter the id in the following structure: {id}");
-//             break;
-//     }
-// }
+// 0. Exit
+function exitApp() {
+  console.log("Goodbye!");
+  process.exit(0);
+}
 
-// async function play() {
-//     const data = await getAllRiddles();
-//     const riddles = data.map(r => new Riddle(r.id, r.name, r.taskDescription, r.correctAnswer));
+// 2. Show all riddles
+async function showAllRiddles() {
+  try {
+    const riddles = await getAllRiddles();
+    console.table(riddles);
+  } catch (err) {
+    console.error("Error fetching riddles:", err.message);
+  }
+}
 
-//     riddles.forEach((riddle) => {
-//         const start = Date.now();
-//         riddle.Repete();
-//         const end = Date.now();
-//         player.RecordTime(start, end);
-//     });
-//     player.ShowState()
+// 3. Create a new riddle
+async function add() {
+  const name = input("Enter riddle name: ");
+  const taskDescription = input("Enter task description: ");
+  const correctAnswer = input("Enter correct answer: ");
+  try {
+    await createRiddle({ name, taskDescription, correctAnswer });
+    console.log("✅ Riddle created!");
+  } catch (err) {
+    console.error("Error creating riddle:", err.message);
+  }
+}
 
-    
-// }
+// 4. Update an existing riddle
+async function update() {
+  const id = Number(input("Enter riddle ID to update: "));
+  const name = input("New riddle name: ");
+  const taskDescription = input("New task description: ");
+  const correctAnswer = input("New correct answer: ");
+  try {
+    await updateRiddle({ id, name, taskDescription, correctAnswer });
+    console.log("✅ Riddle updated!");
+  } catch (err) {
+    console.error("Error updating riddle:", err.message);
+  }
+}
 
+// 5. Delete a riddle
+async function del() {
+  const id = input("Enter riddle ID to delete: ");
+  try {
+    await deleteRiddle(id);
+    console.log("✅ Riddle deleted!");
+  } catch (err) {
+    console.error("❌ Error deleting riddle:", err.message);
+  }
+}
 
-
-// function createR(riddle) {
-    
-// }
-
-
-// function showAllRiddles() {
-
-// }
-
-
-// function updateR(id, newRiddle) {
-
-// }
+// 6. Show leaderboard
+async function showLeadBoard() {
+  try {
+    const players = await getPlayers();
+    players.sort((a, b) => a.lowestTime - b.lowestTime);
+    console.table(players);
+  } catch (err) {
+    console.error("Error fetching leaderboard:", err.message);
+  }
+}
 
 
-// function deleteR(id) {
-
-// }
-
-
-// function viewLeaderboard() {
-
-// }
-
-export {
-    showMenu,
-    
+export { 
+    exitApp,
+    showAllRiddles,
+    add,
+    update,
+    del,
+    showLeadBoard
 }
