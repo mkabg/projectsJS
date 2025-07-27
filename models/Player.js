@@ -1,48 +1,51 @@
 import { updatePlayerTime } from "../api/player-api.js";
 
-// models/Player.js
 export default class Player {
   constructor(name) {
-    this.name = name;
+    this.username = name;
     this.times = [];
-    this.bestTime = null; // holds the personal best time in milliseconds
+    this.best_time = null; // in milliseconds
   }
 
   recordTime(start, end) {
     const duration = end - start;
     this.times.push(duration);
-
-    // Update the personal best if needed
-    this.updateBestTime(duration);
   }
 
-  // Display the current personal best time, or a message if none exists
   showBestTime() {
-    if (this.bestTime === null) {
+    if (this.best_time === null) {
       console.log("No personal best time yet.");
     } else {
-      console.log(`🏆 Personal best: ${this.bestTime}ms`);
+      console.log(`🏆 Personal best: ${(this.best_time / 1000).toFixed(2)}sec`);
     }
   }
 
-  // Update the personal best time if the new time is lower
-  updateBestTime(time) {
-    if (this.bestTime === null || time < this.bestTime) {
-      this.bestTime = time;
-      console.log(`🎉 New personal best: ${this.bestTime}ms`);
-      updatePlayerTime();
+  async updateBestTime(time) {
+    if (this.best_time === null || time < this.best_time) {
+      this.best_time = time;
+      console.log(`🎉 New personal best: ${(this.best_time / 1000).toFixed(2)}sec`);
+      try {
+        await updatePlayerTime(this, Math.round(this.best_time / 1000));
+        console.log("✅ Time updated in DB");
+      } catch (err) {
+        console.error("❌ Failed to update player:", err.message);
+      }
     }
   }
 
-  showStats() {
-    console.log(`Player: ${this.name}`);
+  async showStats() {
+    console.log(`Player: ${this.username}`);
     console.log(`Solved: ${this.times.length} riddles`);
-    const total = this.times.reduce((a, b) => a + b, 0);
-    console.log(`Total time: ${total}ms`);
-    const averageTime = this.times.length > 0 ? totalTime / this.times.length : 0;
-    console.log(`\nGreat job, ${this.name}!`);
-    console.log(`Total time: ${(totalTime / 1000).toFixed(2)} seconds`);
+
+    const total_time = this.times.reduce((a, b) => a + b, 0);
+    const averageTime = this.times.length > 0 ? total_time / this.times.length : 0;
+
+    console.log(`\nGreat job, ${this.username}!`);
+    console.log(`Total time: ${(total_time / 1000).toFixed(2)} seconds`);
     console.log(`Average time per riddle: ${(averageTime / 1000).toFixed(2)} seconds`);
+
+    await this.updateBestTime(total_time);
     this.showBestTime();
   }
 }
+

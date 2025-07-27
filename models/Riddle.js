@@ -10,9 +10,9 @@ export default class Riddle
         this.correctAnswer = correctAnswer;
     }
 
-    showRiddle()
+    showRiddle(num)
     {
-        console.log(`Riddle #${this.id}: ${this.name}`);
+        console.log(`Riddle #${num} ${this.name}`);
         console.log(this.taskDescription);
     }   
     
@@ -36,10 +36,9 @@ export default class Riddle
         }
     }
 
-    async repeat()
+    async repeat(num)
     {
-        this.showRiddle();
-
+        this.showRiddle(num);
         let isCorrect = false;
 
         while (!isCorrect)
